@@ -21,4 +21,3 @@ A raw JavaScript plugin to add a draggable panel.
 
 ## Reference
 The code is rewritten form [Draggable panel - JSFiddle](http://jsfiddle.net/i_like_robots/dqLpeo7p/).
-# draggable-panel
