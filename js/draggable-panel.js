@@ -1,37 +1,48 @@
 var DraggablePanel = (function(){ 
     var self = {} ;
-    var panel , toggle ;
+    var panel , toggle , panelTop , panelBottom;
     var interaction , gesture ;
     var currentPosition ;
     var isOpen ;
+    var panelTopHeight ;
+    var border ;
+    var borderHeight ;
 
-    var hasClass = function(ele,cls) {
-        return !!ele.className.match(new RegExp('(\\s|^)'+cls+'(\\s|$)'));
-    }
-
-    var addClass = function(ele,cls) {
-        if (!hasClass(ele,cls)) 
-            ele.className += " " + cls ;
-    }
-
-    var removeClass = function(ele,cls) {
-        if (hasClass(ele,cls)) {
-            var reg = new RegExp('(\\s|^)'+cls+'(\\s|$)');
-            ele.className=ele.className.replace(reg,' ');
+    var setPanelOpen = function(){
+        if ( border === null )
+            panel.style.top = 0 ;
+        else {
+            panel.style.top = border.clientHeight + "px" ;
         }
     }
 
-    self.init = function(p,t){
-        panel = document.getElementById(p) ;
-        toggle = document.getElementById(t) ;
-        addClass(panel,"is-closed");
-        addClass(panel,"Panel");
-        addClass(panel,"js-panel");
+    var setPanelClose = function(){
+        panel.style.top = (window.innerHeight - panelTopHeight) + "px";
+    }
 
-        addClass(toggle,"Panel-toggle")
-        addClass(toggle,"js-draggable");
 
-        toggle.onmousedown = toggle.ontouchstart = onDragStart ;
+    self.init = function(p,para){
+        document.addEventListener('DOMContentLoaded', function() {
+            panel = document.getElementById(p) ;
+            panel.style.position = "absolute" ;
+            panel.style.bottom = panel.style.left = 0 ;
+            panel.style.width = "100%" ;
+            toggle = document.getElementById(para.toggle) ;
+            panelTop = document.getElementById(para.top) ;
+            panelBottom = document.getElementById(para.bottom) ;
+            panelTopHeight = panelTop.clientHeight ;
+            border = document.getElementById(para.border) ; 
+            if ( border === null )
+                borderHeight = 0 ;
+            else {
+                borderHeight = border.clientHeight;
+            }
+            console.log(borderHeight);
+            setPanelClose();
+            panel.style.overflow = "hidden" ;
+            
+            toggle.onmousedown = toggle.ontouchstart = onDragStart ;
+        });
     }
     var getPosition = function(e){
         return e.pageY;
@@ -56,18 +67,13 @@ var DraggablePanel = (function(){
         var pointerPosition = getPosition(e);
         startInteraction(pointerPosition);
         startGesture(pointerPosition);
-
-        addClass(panel,"is-active");
-        removeClass(panel,"is-open") ;
-        removeClass(panel,"is-closed") ;
-        panel.style.top = calcRelativePosition(pointerPosition) ;
+        panel.style.top = calcRelativePosition(pointerPosition) + "px" ;
 
         window.onmouseup = window.ontouchend = onDragEnd ;
         window.onmousemove = window.ontouchmove = onDragMove ;
     }
 
     var onDragMove = function(e){
-
         var pointerPosition = getPosition(e);
         var direction = pointerPosition < currentPosition ? "up" : "down";
 
@@ -76,7 +82,7 @@ var DraggablePanel = (function(){
         }
 
         currentPosition = pointerPosition;
-        panel.style.top = calcRelativePosition(pointerPosition) ;
+        panel.style.top = calcRelativePosition(pointerPosition) + "px";
     }
 
     var onDragEnd = function(e){
@@ -95,8 +101,12 @@ var DraggablePanel = (function(){
         }
 
         panel.style.top = "" ;
-        removeClass(panel,"is-active") ;
-        addClass(panel,"is-" + (isOpen ? "open" : "closed"));
+        if ( isOpen ){
+            setPanelOpen() ;
+        }
+        else {
+            setPanelClose();
+        }
 
         interaction = gesture = null;
       
@@ -112,6 +122,7 @@ var DraggablePanel = (function(){
         var time = endGesture.time - startGesture.time;
         return Math.abs(distance / time);
     };
+
     return self ;
 })();
 
