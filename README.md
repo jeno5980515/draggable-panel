@@ -1,5 +1,5 @@
 # draggable-panel
-A pure JavaScript plugin to set your div draggable. 
+A raw JavaScript plugin to add a draggable panel.
 ## Usage 
 ```javascript
 <div id="header" style="background:grey;height:150px;">Header</div>
