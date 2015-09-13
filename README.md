@@ -14,3 +14,4 @@ A pure JavaScript plugin to set your div draggable.
 
 ## Reference
 The code is rewritten form [Draggable panel - JSFiddle](http://jsfiddle.net/i_like_robots/dqLpeo7p/).
+# draggable-panel
