@@ -10,9 +10,9 @@ var DraggablePanel = (function(){
 
     var setPanelOpen = function(){
         if ( border === null )
-            panel.style.top = 0 ;
+            panel.style.top = 0 + "px" ;
         else {
-            panel.style.top = border.clientHeight + "px" ;
+            panel.style.top = (borderHeight + "px") ;
         }
     }
 
@@ -27,17 +27,20 @@ var DraggablePanel = (function(){
             panel.style.position = "absolute" ;
             panel.style.bottom = panel.style.left = 0 ;
             panel.style.width = "100%" ;
+            panel.style["transition"] = "top .25s ease-out" ;
+            panel.style["-webkit-transition"] = "top .25s ease-out" ;
+            panel.style["will-change"] = "top" ;
             toggle = document.getElementById(para.toggle) ;
             panelTop = document.getElementById(para.top) ;
             panelBottom = document.getElementById(para.bottom) ;
             panelTopHeight = panelTop.clientHeight ;
             border = document.getElementById(para.border) ; 
+            borderHeight = border.clientHeight ;
             if ( border === null )
                 borderHeight = 0 ;
             else {
                 borderHeight = border.clientHeight;
             }
-            console.log(borderHeight);
             setPanelClose();
             panel.style.overflow = "hidden" ;
             
@@ -63,6 +66,8 @@ var DraggablePanel = (function(){
         };
     }
     var onDragStart = function(e){
+        panel.style["transition"] = "none" ;
+        panel.style["-webkit-transition"] = "none" ;
         e.preventDefault();
         var pointerPosition = getPosition(e);
         startInteraction(pointerPosition);
@@ -86,6 +91,8 @@ var DraggablePanel = (function(){
     }
 
     var onDragEnd = function(e){
+        panel.style["transition"] = "top .25s ease-out" ;
+        panel.style["-webkit-transition"] = "top .25s ease-out" ;
         var now = Date.now();
         var velocity = calcVelocity(gesture, {
             position: currentPosition,
@@ -97,7 +104,7 @@ var DraggablePanel = (function(){
         } else if (velocity > 0.05) {
             isOpen = gesture.direction == "up";
         } else {
-            isOpen = currentPosition <= (window.innerHeight / 2);
+            isOpen = currentPosition <= ((window.innerHeight - panelTopHeight) / 2);
         }
 
         panel.style.top = "" ;
