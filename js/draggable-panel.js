@@ -7,17 +7,26 @@ var DraggablePanel = (function(){
     var panelTopHeight ;
     var border ;
     var borderHeight ;
-
+	
+	self.refresh = function(){
+        if ( isOpen ){
+            setPanelOpen() ;
+        }
+        else {
+            setPanelClose();
+        }
+	};
+	
     var setPanelOpen = function(){
         if ( border === null )
             panel.style.top = 0 + "px" ;
         else {
-            panel.style.top = (borderHeight + "px") ;
+            panel.style.top = (border.clientHeight  + "px") ;
         }
     }
 
     var setPanelClose = function(){
-        panel.style.top = (window.innerHeight - panelTopHeight) + "px";
+        panel.style.top = (window.innerHeight - panelTop.clientHeight) + "px";
     }
 
 
@@ -132,5 +141,4 @@ var DraggablePanel = (function(){
 
     return self ;
 })();
-
 
