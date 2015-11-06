@@ -1,3 +1,21 @@
+var mouseEventTypes = {
+	touchstart : "mousedown",
+	touchmove : "mousemove",
+	touchend : "mouseup"
+};
+
+for (originalType in mouseEventTypes) {
+	document.addEventListener(originalType, function(originalEvent) {
+		event = document.createEvent("MouseEvents");
+		touch = originalEvent.changedTouches[0];
+		event.initMouseEvent(mouseEventTypes[originalEvent.type], true, true,
+		window, 0, touch.screenX, touch.screenY, touch.clientX,
+		touch.clientY, touch.ctrlKey, touch.altKey, touch.shiftKey,
+		touch.metaKey, 0, null);
+		originalEvent.target.dispatchEvent(event);
+	});
+}
+
 var DraggablePanel = (function(){ 
     var self = {} ;
     var panel , toggle , panelTop , panelBottom;
@@ -7,17 +25,26 @@ var DraggablePanel = (function(){
     var panelTopHeight ;
     var border ;
     var borderHeight ;
-
+	
+	self.refresh = function(){
+        if ( isOpen ){
+            setPanelOpen() ;
+        }
+        else {
+            setPanelClose();
+        }
+	};
+	
     var setPanelOpen = function(){
         if ( border === null )
             panel.style.top = 0 + "px" ;
         else {
-            panel.style.top = (borderHeight + "px") ;
+            panel.style.top = (border.clientHeight  + "px") ;
         }
     }
 
     var setPanelClose = function(){
-        panel.style.top = (window.innerHeight - panelTopHeight) + "px";
+        panel.style.top = (window.innerHeight - panelTop.clientHeight) + "px";
     }
 
 
@@ -44,7 +71,7 @@ var DraggablePanel = (function(){
             setPanelClose();
             panel.style.overflow = "hidden" ;
             
-            toggle.onmousedown = toggle.ontouchstart = onDragStart ;
+            toggle.onmousedown = onDragStart ;
         });
     }
     var getPosition = function(e){
@@ -74,8 +101,8 @@ var DraggablePanel = (function(){
         startGesture(pointerPosition);
         panel.style.top = calcRelativePosition(pointerPosition) + "px" ;
 
-        window.onmouseup = window.ontouchend = onDragEnd ;
-        window.onmousemove = window.ontouchmove = onDragMove ;
+        window.onmouseup = onDragEnd ;
+        window.onmousemove = onDragMove ;
     }
 
     var onDragMove = function(e){
@@ -117,7 +144,7 @@ var DraggablePanel = (function(){
 
         interaction = gesture = null;
       
-        window.onmouseup = window.ontouchend = window.onmousemove = window.ontouchmove = function(){;} ;
+        window.onmouseup = window.onmousemove = function(){;} ;
     }
 
     var calcRelativePosition = function(position) {
@@ -132,5 +159,4 @@ var DraggablePanel = (function(){
 
     return self ;
 })();
-
 
